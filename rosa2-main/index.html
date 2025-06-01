@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Rose with Music</title>
+  <link rel="stylesheet" href="./style.css">
+  <style>
+    #music-controls {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 30px;
+      padding: 10px 20px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      font-family: sans-serif;
+      color: white;
+      z-index: 999;
+      user-select: none;
+    }
+
+    #music-controls button {
+      background-color: #e91e63;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 16px;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    #music-controls button:hover {
+      background-color: #d81b60;
+    }
+
+    #volume-slider {
+      width: 100px;
+      cursor: pointer;
+    }
+
+    #volume-label {
+      min-width: 30px;
+      text-align: right;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="glass"></div>
+  <div class="thorns"><div></div><div></div><div></div><div></div></div>
+  <div class="glow"></div>
+  <div class="rose-leaves"><div></div><div></div></div>
+  <div class="rose-petals"><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+  <div class="sparkles"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+</div>
+
+<!-- 🎵 เพลงพื้นหลัง -->
+<audio id="bg-music" src="music.mp3" autoplay loop></audio>
+
+<!-- 🔘 เมนูควบคุม -->
+<div id="music-controls">
+  <span>🎵 Background Music</span>
+  <button onclick="toggleMusic()">Pause</button>
+  <input type="range" id="volume-slider" min="0" max="100" value="2" />
+  <span id="volume-label">2%</span>
+</div>
+
+<script>
+  const music = document.getElementById('bg-music');
+  const button = document.querySelector('#music-controls button');
+  const volumeSlider = document.getElementById('volume-slider');
+  const volumeLabel = document.getElementById('volume-label');
+
+  // ตั้งเสียงเริ่มต้น 2%
+  music.volume = 0.02;
+  volumeSlider.value = 2;
+  volumeLabel.textContent = '2%';
+
+  // คลิกใดๆ เพื่อให้เล่นอัตโนมัติ (ตาม policy ของเบราว์เซอร์)
+  document.addEventListener('click', () => {
+    if (music.paused) {
+      music.play();
+    }
+  });
+
+  // ปุ่มเล่น/หยุดเพลง
+  function toggleMusic() {
+    if (music.paused) {
+      music.play();
+      button.textContent = 'Pause';
+    } else {
+      music.pause();
+      button.textContent = 'Play';
+    }
+  }
+
+  // กดลูกศรขึ้น/ลง เพิ่ม/ลดเสียงทีละ 10%
+  document.addEventListener('keydown', (event) => {
+    if (event.key === "ArrowUp") {
+      music.volume = Math.min(1, music.volume + 0.1);
+    } else if (event.key === "ArrowDown") {
+      music.volume = Math.max(0, music.volume - 0.1);
+    }
+    // อัพเดต slider และ label
+    volumeSlider.value = Math.round(music.volume * 100);
+    volumeLabel.textContent = Math.round(music.volume * 100) + '%';
+  });
+
+  // ปรับเสียงด้วย slider
+  volumeSlider.addEventListener('input', () => {
+    const vol = volumeSlider.value / 100;
+    music.volume = vol;
+    volumeLabel.textContent = volumeSlider.value + '%';
+  });
+</script>
+
+</body>
+</html>
